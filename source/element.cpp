@@ -97,6 +97,8 @@ void element :: subdivide( std::vector< element > &elements, std::vector< vertex
         vertex new_point( _vertices[ 0 ]->_owning_patch, 0, 0, 0 );
         if( e1_sl > e2_sl && e1_sl > e3_sl )
         {
+			
+			
             new_point = ( *_vertices[ 0 ] + *_vertices[ 1 ] ) / 2.0f;
 			std::vector< vertex >::iterator i = std::find( vertices.begin(), vertices.end(), new_point );
             if( i == vertices.end() )

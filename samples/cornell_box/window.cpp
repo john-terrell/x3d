@@ -132,9 +132,9 @@ window :: window( int x, int y, unsigned width, unsigned height ) :
     data->_radiosity = new radiosity( glut_id, 512 );
     
     data->_radiosity->cornell_box();
-    data->_radiosity->subdivide_patches( 5 );
+    data->_radiosity->subdivide_patches( 6 );
     data->_radiosity->create_elements();
-    data->_radiosity->subdivide_elements( 3 );
+    data->_radiosity->subdivide_elements( 5 );
     data->_radiosity->initialize();
 }
 
