@@ -171,16 +171,20 @@ void window :: refresh()
 	glRotatef( 180, 0., 1., 0. );
 	//glTranslatef( -278, -273, 800 );
 
-	//glTranslatef( 278, 273, -800 );
+	glTranslatef( 278, 273, -800 );
 	glRotatef( _rotation_angle, 0., 1., 0. );
 	glTranslatef( -278, -273, 800 );
 	
-	glPushMatrix();
-	glLoadIdentity();
-#endif
-	
+//	glPushMatrix();
+//	glLoadIdentity();
+#else
+    
     gluLookAt( 278, 273, -800, 278, 273, 0, 0, 1, 0 );
-	
+    glTranslatef( 0, 0, 800 );
+    glRotatef( _rotation_angle, 0., 1, 0. );
+    glTranslatef( 0, 0, -800 );
+#endif
+    
     if( data->_draw_wire_frame )
     {
         glPolygonMode( GL_FRONT, GL_LINE );
