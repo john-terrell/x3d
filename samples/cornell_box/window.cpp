@@ -167,24 +167,13 @@ void window :: refresh()
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
-#if 0
-	glRotatef( 180, 0., 1., 0. );
-	//glTranslatef( -278, -273, 800 );
-
-	glTranslatef( 278, 273, -800 );
-	glRotatef( _rotation_angle, 0., 1., 0. );
-	glTranslatef( -278, -273, 800 );
-	
-//	glPushMatrix();
-//	glLoadIdentity();
-#else
+    vertex centroid = data->_radiosity->centroid();
+    gluLookAt( 278, 273, -800, centroid._x, centroid._y, centroid._z, 0, 1, 0 );
     
-    gluLookAt( 278, 273, -800, 278, 273, 0, 0, 1, 0 );
-    glTranslatef( 0, 0, 800 );
+    glTranslatef(centroid._x, centroid._y, centroid._z);
     glRotatef( _rotation_angle, 0., 1, 0. );
-    glTranslatef( 0, 0, -800 );
-#endif
-    
+    glTranslatef(-centroid._x, -centroid._y, -centroid._z);
+
     if( data->_draw_wire_frame )
     {
         glPolygonMode( GL_FRONT, GL_LINE );

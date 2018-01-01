@@ -29,7 +29,9 @@ namespace x3d
             return color( _reflectance._red * recip, _reflectance._green * recip, _reflectance._blue * recip );
         }
         
-        vertex( unsigned owning_patch = 0xFFFFFFFF, float x = 0, float y = 0, float z = 0 ) : point3( x, y, z ), _owning_patch( owning_patch ),
+        vertex( unsigned owning_patch = 0xFFFFFFFF, float x = 0, float y = 0, float z = 0 ) :
+            point3( x, y, z ),
+            _owning_patch( owning_patch ),
             _reflectance( 0, 0, 0 ),
             _reflectance_count( 0 )
         {

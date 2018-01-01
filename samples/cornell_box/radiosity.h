@@ -59,6 +59,23 @@ public:
     void create_elements();
     
     unsigned steps() const;
+
+    vertex centroid() const 
+    {
+        auto centroid = vertex();
+        for (auto index = 0; index < _vertices.size(); ++index)
+        {
+            centroid._x += _vertices[index]._x;
+            centroid._y += _vertices[index]._y;
+            centroid._z += _vertices[index]._z;
+        }
+        
+        centroid._x /= _vertices.size();
+        centroid._y /= _vertices.size();
+        centroid._z /= _vertices.size();
+        
+        return centroid;
+    }
     
 protected:
     void calculate_frame_from_element( const element &e, vector3 frame[ 3 ] );
