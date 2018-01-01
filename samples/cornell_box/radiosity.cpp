@@ -70,7 +70,7 @@ void radiosity :: calculate_frame_from_element( const element& e, vector3 frame[
     while( frame[ 1 ].length() < 0.01 );
     
     frame[ 1 ].set_length( 1.0f );
-    frame[ 2 ] = cross_product( frame[ 0 ], frame[ 1 ] ); 	
+    frame[ 2 ] = cross_product( frame[ 0 ], frame[ 1 ] );
 	frame[ 0 ].set_length( -1.0f );
 }
 

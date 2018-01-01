@@ -127,11 +127,19 @@ namespace x3d
     inline vector3 cross_product( const vector3& a, const vector3& b )
     {
         assert( a.is_valid() && b.is_valid() );
+#if 0
         return vector3(
             ( a._dy * b._dz ) - ( a._dz * b._dy ),
             ( a._dz * b._dx ) - ( a._dx * b._dz ),
             ( a._dx * b._dy ) - ( a._dy * b._dx )
             );
+#else
+        return vector3(
+            -(( a._dy * b._dz ) - ( a._dz * b._dy )),
+            -(( a._dz * b._dx ) - ( a._dx * b._dz )),
+            -(( a._dx * b._dy ) - ( a._dy * b._dx ))
+            );
+#endif
     }
 
     inline vector3 operator * ( const vector3& a, float b )
