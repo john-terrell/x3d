@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
-
 #include "element.h"
 #include "color.h"
 #include "hemicube.h"
+
+#include <vector>
 
 using namespace x3d;
 

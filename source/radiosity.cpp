@@ -1,9 +1,6 @@
 #include "x3d.h"
-#include "opengl.h"
 #include "radiosity.h"
-
-#include <stdio.h>
-#include <cmath>
+#include "opengl.h"
 
 using namespace x3d;
 
@@ -11,6 +8,7 @@ const float absorption = 0.3;
 
 static void redisplay()
 {
+    // This empty function is needed by GLUT
 }
 
 radiosity :: radiosity( int parent_window, unsigned resolution ) :

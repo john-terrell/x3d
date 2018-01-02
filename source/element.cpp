@@ -1,6 +1,5 @@
 #include "x3d.h"
 #include "element.h"
-#include <algorithm>
 
 using namespace x3d;
 

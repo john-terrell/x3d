@@ -4,12 +4,6 @@
 
 using namespace x3d;
 
-void x3d_assertion_failed( const char *msg, const char *file, unsigned line )
-{
-    abort();
-}
-
-
 int main( int argc, char **argv )
 {
     int status = 0;

@@ -2,8 +2,6 @@
 
 #include "point3.h"
 
-#include <math.h>
-
 namespace x3d
 {
     //
