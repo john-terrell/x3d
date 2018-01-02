@@ -6,21 +6,21 @@ find_package(Glut REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(SRC_FILES
-    include/x3d/color.h
-    include/x3d/element.h
-    include/x3d/hemicube.h
-    include/x3d/ieee_fp.h
-    include/x3d/opengl.h
-    include/x3d/point3.h
-    include/x3d/vector3.h
-    include/x3d/x3d.h
-    samples/cornell_box/main.cpp
-    samples/cornell_box/radiosity.cpp
-    samples/cornell_box/radiosity.h
-    samples/cornell_box/window.cpp
-    samples/cornell_box/window.h
+    source/color.h
     source/element.cpp
+    source/element.h
     source/hemicube.cpp
+    source/hemicube.h
+    source/ieee_fp.h
+    source/main.cpp
+    source/opengl.h
+    source/point3.h
+    source/radiosity.cpp
+    source/radiosity.h
+    source/vector3.h
+    source/window.cpp
+    source/window.h
+    source/x3d.h
     )
 
 include_directories(include)
