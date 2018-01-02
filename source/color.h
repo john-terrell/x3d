@@ -11,9 +11,9 @@ namespace x3d
             _green( green ),
             _blue( blue )
         {
-            ensure_finite( red, __FILE__, __LINE__ );
-            ensure_finite( green, __FILE__, __LINE__ );
-            ensure_finite( blue, __FILE__, __LINE__ );
+            assert(std::isfinite( red ));
+            assert(std::isfinite( green ));
+            assert(std::isfinite( blue ));
         }
         
         color & operator += ( const color &a )

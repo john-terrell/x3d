@@ -5,13 +5,14 @@ project(x3d CXX)
 find_package(Glut REQUIRED)
 find_package(OpenGL REQUIRED)
 
+set (CMAKE_CXX_STANDARD 11)
+
 set(SRC_FILES
     source/color.h
     source/element.cpp
     source/element.h
     source/hemicube.cpp
     source/hemicube.h
-    source/ieee_fp.h
     source/main.cpp
     source/opengl.h
     source/point3.h

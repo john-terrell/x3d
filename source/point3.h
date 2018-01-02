@@ -23,7 +23,7 @@ namespace x3d
 
         bool is_valid() const
         {
-            return( is_finite( _x ) && is_finite( _y ) && is_finite( _z ) );
+            return( std::isfinite( _x ) && std::isfinite( _y ) && std::isfinite( _z ) );
         }
     };
 

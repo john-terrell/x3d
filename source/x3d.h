@@ -7,7 +7,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "ieee_fp.h"
+#include <cmath>
 
 #ifndef NDEBUG
 #ifndef assert

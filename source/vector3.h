@@ -15,9 +15,9 @@ namespace x3d
 
     // construction
         vector3() :
-            _dx( nan() ),
-            _dy( nan() ),
-            _dz( nan() )
+            _dx( NAN ),
+            _dy( NAN ),
+            _dz( NAN )
         {
         }
 
@@ -32,7 +32,7 @@ namespace x3d
     // instance methods
         bool is_valid() const
         {
-            return ( is_finite( _dx ) && is_finite( _dy ) && is_finite( _dz ) ? true : false );
+            return ( std::isfinite( _dx ) && std::isfinite( _dy ) && std::isfinite( _dz ) ? true : false );
         }
 
         //
@@ -57,11 +57,11 @@ namespace x3d
         //
         void set_length( float new_length )
         {
-            assert( is_finite( new_length ) );
+            assert( std::isfinite( new_length ) );
             assert( is_valid() );
             const float scale = new_length / length();
 
-            assert( is_finite( scale ) );
+            assert( std::isfinite( scale ) );
 
             _dx *= scale;
             _dy *= scale;
@@ -91,7 +91,7 @@ namespace x3d
         
         void operator *= ( float a )
         {
-            assert( is_finite( a ) );
+            assert( std::isfinite( a ) );
         
             _dx *= a;
             _dy *= a;
@@ -141,7 +141,7 @@ namespace x3d
 
     inline vector3 operator * ( const vector3& a, float b )
     {
-        assert( a.is_valid() && is_finite( b ) );
+        assert( a.is_valid() && std::isfinite( b ) );
         return vector3( a._dx * b, a._dy * b, a._dz * b );
     }
 
