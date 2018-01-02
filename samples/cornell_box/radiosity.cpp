@@ -2,12 +2,11 @@
 #include <x3d/opengl.h>
 
 #include <stdio.h>
+#include <cmath>
 
 using namespace x3d;
 
 #include "radiosity.h"
-
-using namespace x3d;
 
 const float absorption = 0.3;
 
@@ -16,7 +15,7 @@ static void redisplay()
 }
 
 radiosity :: radiosity( int parent_window, unsigned resolution ) :
-    _total_flux( 0 ),
+    _total_flux( NAN ),
     _total_unsent_flux( 0 ),
     _resolution( resolution ),
     _hemicube( resolution ),
@@ -34,26 +33,17 @@ radiosity :: radiosity( int parent_window, unsigned resolution ) :
     _form_factors.reserve( _elements.capacity() );
 }
 
-void radiosity :: initialize()
-{
-    _total_flux = 0;
-    _total_unsent_flux = 0.0f;
-
-    for( unsigned index = 0; index < _patches.size(); ++index )
-    {
-        _total_flux += _patches[ index ].area() * ( _patch_exitances[ index ]._red + _patch_exitances[ index ]._green + _patch_exitances[ index ]._blue );
-    }
-    
-    determine_patch_with_most_unsent_flux();
-}
-
 float radiosity :: convergence() const
 {
     float convergence = 0.0f;
-        
-    if( _total_flux > 0.001 )
+    if (std::isnan(_total_flux))
+    {
+        convergence = 1.0f;
+    }
+    else if( _total_flux > 0.001 )
+    {
         convergence = fabs( _total_unsent_flux ) / _total_flux;
-            
+    }       
     return convergence;
 }
 
@@ -124,7 +114,6 @@ void radiosity :: calculate_form_factors( unsigned patch_index )
 
     glutSwapBuffers();
 
-#if 1
     for( unsigned side_face = 0; side_face < 4; ++side_face )
     {
         vector3 view;
@@ -176,7 +165,6 @@ void radiosity :: calculate_form_factors( unsigned patch_index )
         glutSwapBuffers();
 
     }
-#endif
 }
 
 void radiosity :: execute_iteration()
@@ -189,6 +177,12 @@ void radiosity :: execute_iteration()
     int current_glut_id = glutGetWindow();
     glutSetWindow( _glut_id );
     
+    _index_of_patch_with_highest_unsent_flux = determine_patch_with_highest_unsent_flux(_total_unsent_flux);
+    if (std::isnan(_total_flux))
+    {
+        _total_flux = _total_unsent_flux;
+    }
+
     calculate_form_factors( _index_of_patch_with_highest_unsent_flux );
     
     //
@@ -218,7 +212,7 @@ void radiosity :: execute_iteration()
     
     _patch_exitances[ _index_of_patch_with_highest_unsent_flux ] = color( 0, 0, 0 );
 
-    determine_patch_with_most_unsent_flux();
+//    _index_of_patch_with_highest_unsent_flux = determine_patch_with_highest_unsent_flux(_total_unsent_flux);
 
     glutSetWindow( current_glut_id );
 }
@@ -257,6 +251,7 @@ void radiosity :: render( unsigned patch_index, const vector3 &view, const vecto
     
     for( unsigned index = 0; index < _elements.size(); ++index )
     {
+        // If this is the patch we're rendering from, skip it.
         if( patch_index == _element_owners[ index ] )
             continue;
         
@@ -285,8 +280,7 @@ void radiosity :: render( unsigned patch_index, const vector3 &view, const vecto
 }
 
 void radiosity :: draw_elements()
-{
-    
+{   
     for( unsigned index = 0; index < _elements.size(); ++index )
     {
         element &e = _elements[ index ];
@@ -342,12 +336,14 @@ void radiosity :: draw_patches()
 
 void radiosity :: calculate_vertex_exitance()
 {
+    // Clear all of the reflectance values from the vertices.
     for( unsigned index = 0; index < _vertices.size(); ++index )
     {
         _vertices[ index ]._reflectance = color( 0, 0, 0 );
         _vertices[ index ]._reflectance_count = 0;
     }
 
+    // Loop through every element and add the element's exitance to the element's vertices.
     for( unsigned index = 0; index < _elements.size(); ++index )
     {
         element &e = _elements[ index ];
@@ -361,6 +357,8 @@ void radiosity :: calculate_vertex_exitance()
         }
     }
 
+    // Set the vertex's reflectance to the average of all of the elements that share it (since they
+    // were summed above.)
     for( unsigned index = 0; index < _vertices.size(); ++index )
     {
         _vertices[ index ]._reflectance /= (float)_vertices[ index ]._reflectance_count;
@@ -370,56 +368,10 @@ void radiosity :: calculate_vertex_exitance()
 void radiosity :: draw_full()
 {
     calculate_vertex_exitance();
-#if 0
-    float largest_color_band_value = 0.0f;
-    for( unsigned index = 0; index < _elements.size(); ++index )
-    {
-        const color &e = _exitances[ index ];
-        
-        float max_color_band_value = 0;
-        if( e._red > e._green && e._red > e._blue )
-            max_color_band_value = e._red;
-        else
-        if( e._green > e._red && e._green > e._blue )
-            max_color_band_value = e._green;
-        else
-            max_color_band_value = e._blue;
-            
-        if( max_color_band_value > largest_color_band_value )
-            largest_color_band_value = max_color_band_value;
-    }
-#endif
     
     for( unsigned index = 0; index < _elements.size(); ++index )
     {
         element &e = _elements[ index ];
-#if 0
-#if 0
-        const double T_MaxExitance = ( double )254.0 / ( double )255.0;
-
-        color emittance = _emittance[ _element_owners[ index ] ];
-        color exitance = _exitances[ index ];
-        
-        exitance += emittance;
-        exitance *= ( T_MaxExitance / largest_color_band_value );
-        
-        float emax = 0;
-        if( exitance._red > exitance._green && exitance._red > exitance._blue )
-            emax = exitance._red;
-        if( exitance._green > exitance._red && exitance._green > exitance._blue )
-            emax = exitance._green;
-        else
-            emax = exitance._blue;
-
-        if( emax > 1.0 )
-            exitance *= 1.0 / emax;
-        glColor3f( exitance._red, exitance._green, exitance._blue);
-#else
-        glColor3f( _exitances[ index ]._red + _emittance[ index ]._red, 
-                   _exitances[ index ]._green + _emittance[ index ]._green, 
-                   _exitances[ index ]._blue + _emittance[ index ]._blue);
-#endif
-#endif
         if( e.vertex_count() == 3 )
         {
             glBegin( GL_TRIANGLES );
@@ -632,7 +584,7 @@ unsigned radiosity :: steps() const
     return _steps;
 }
 
-void radiosity :: determine_patch_with_most_unsent_flux()
+unsigned radiosity :: determine_patch_with_highest_unsent_flux(float &total_unsent_flux) const
 {
     //
     // walk the element list and add all their unsent flux values, also
@@ -641,17 +593,26 @@ void radiosity :: determine_patch_with_most_unsent_flux()
     //
     float highest_unsent_flux = 0;
     
-    _total_unsent_flux = 0.0f;
+    unsigned index_of_patch_with_highest_unsent_flux = 0;
+
+    total_unsent_flux = 0.0f;
     for( unsigned index = 0; index < _patches.size(); ++index )
     {
-        const float unsent_flux = _patches[ index ].area() * ( _patch_exitances[ index ]._red + _patch_exitances[ index ]._green + _patch_exitances[ index ]._blue );
-        _total_unsent_flux += unsent_flux;
+        const float unsent_flux = calculate_patch_unsent_flux(index);
+        total_unsent_flux += unsent_flux;
         
         if( unsent_flux > highest_unsent_flux )
         {
             highest_unsent_flux = unsent_flux;
-            _index_of_patch_with_highest_unsent_flux = index;
+            index_of_patch_with_highest_unsent_flux = index;
         }
     }
+
+    return index_of_patch_with_highest_unsent_flux;
 }
     
+float radiosity :: calculate_patch_unsent_flux( unsigned patch_index ) const
+{
+    return _patches[ patch_index ].area() * ( _patch_exitances[ patch_index ]._red + _patch_exitances[ patch_index ]._green + _patch_exitances[ patch_index ]._blue );
+}
+

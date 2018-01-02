@@ -135,7 +135,6 @@ window :: window( int x, int y, unsigned width, unsigned height ) :
     data->_radiosity->subdivide_patches( 6 );
     data->_radiosity->create_elements();
     data->_radiosity->subdivide_elements( 5 );
-    data->_radiosity->initialize();
 }
 
 window :: ~window()

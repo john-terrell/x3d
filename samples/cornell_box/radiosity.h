@@ -35,7 +35,6 @@ public:
     
 public:
     radiosity( int glut_parent_window, unsigned resolution );
-    void initialize();
     
     void execute_iteration();
     float convergence() const;
@@ -78,10 +77,11 @@ public:
     }
     
 protected:
+    float calculate_patch_unsent_flux( unsigned patch_index ) const;
     void calculate_frame_from_element( const element &e, vector3 frame[ 3 ] );
     void calculate_form_factors( unsigned element_index );
     void render( unsigned element_index, const vector3 &view, const vector3 &up );
-    void determine_patch_with_most_unsent_flux();
+    unsigned determine_patch_with_highest_unsent_flux(float& total_unsent_flux) const;
     void calculate_vertex_exitance();
 };
 
