@@ -1,6 +1,4 @@
 #include <x3d/x3d.h>
-#include <x3d/collection.h>
-#include <x3d/auto_release_pool.h>
 #include <x3d/opengl.h>
 #include "window.h"
 

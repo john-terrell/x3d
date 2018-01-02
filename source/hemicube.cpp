@@ -1,5 +1,5 @@
 #include <x3d/x3d.h>
-#include <x3d/radiosity/hemicube.h>
+#include <x3d/hemicube.h>
 
 using namespace x3d;
 

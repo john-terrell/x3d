@@ -1,5 +1,5 @@
 #include <x3d/x3d.h>
-#include <x3d/radiosity/element.h>
+#include <x3d/element.h>
 #include <algorithm>
 
 using namespace x3d;

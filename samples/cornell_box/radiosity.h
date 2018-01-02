@@ -3,10 +3,9 @@
 
 #include <vector>
 
-#include <x3d/radiosity/element.h>
-#include <x3d/matrix44.h>
+#include <x3d/element.h>
 #include <x3d/color.h>
-#include <x3d/radiosity/hemicube.h>
+#include <x3d/hemicube.h>
 using namespace x3d;
 
 //

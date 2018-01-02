@@ -1,10 +1,4 @@
 #include <x3d/x3d.h>
-#include <x3d/scene.h>
-#include <x3d/scene_view.h>
-#include <x3d/reference.h>
-#include <x3d/auto_release_pool.h>
-#include <x3d/iterator.h>
-
 #include <x3d/opengl.h>
 
 #include <map>
@@ -51,8 +45,6 @@ static void windowReshapeFunc( int, int )
 
 static void windowIdleFunc()
 {
-    auto_release_pool::default_auto_release_pool->release_all_items();
-
     int currentWindow = glutGetWindow();
     
     std::map< int, window * >::iterator i = windowMap.find( currentWindow );
@@ -73,8 +65,6 @@ static void shutdownFunc()
     {
         delete (*i).second;
     }
-    
-    auto_release_pool::default_auto_release_pool->release_all_items();
 }
 
 static void key_func( unsigned char key, int x, int y )
@@ -95,11 +85,7 @@ static void timer_func( int value )
         (*i).second->timer( value );
 }
 
-static void create_sample_scene( window *wnd, scene *scn )
-{
-}
-
-window :: window( int x, int y, unsigned width, unsigned height ) : 
+window :: window( int x, int y, unsigned width, unsigned height ) :
     data( 0 ),
     _rotation_angle( 0 )
 {
@@ -193,11 +179,6 @@ void window :: refresh()
     }
 
     glutSwapBuffers();
-}
-
-void window :: graph_node_change_triggered( graph_node *subject )
-{
-    glutPostRedisplay();
 }
 
 void window :: idle()
