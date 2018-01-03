@@ -1,8 +1,6 @@
 #include "x3d.h"
 #include "element.h"
 
-using namespace x3d;
-
 element :: element( const color &reflectance, vertex *p1, vertex *p2, vertex *p3, vertex *p4 ) : _reflectance( reflectance )
 {
     assert( p1 );

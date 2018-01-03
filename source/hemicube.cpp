@@ -1,8 +1,6 @@
 #include "x3d.h"
 #include "hemicube.h"
 
-using namespace x3d;
-
 hemicube :: hemicube( unsigned resolution ) :
     _resolution( resolution )
 {

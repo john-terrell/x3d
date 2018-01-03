@@ -2,8 +2,6 @@
 #include "radiosity.h"
 #include "opengl.h"
 
-using namespace x3d;
-
 const float absorption = 0.3;
 
 static void redisplay()

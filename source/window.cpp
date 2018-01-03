@@ -5,8 +5,6 @@
 
 #include <map>
 
-using namespace x3d;
-
 static std::map< int, window * > windowMap;
 
 static bool shutdownCallbackRegistered = false;
@@ -119,7 +117,7 @@ window :: window( int x, int y, unsigned width, unsigned height ) :
     data->_radiosity->cornell_box();
     data->_radiosity->subdivide_patches( 6 );
     data->_radiosity->create_elements();
-    data->_radiosity->subdivide_elements( 5 );
+    data->_radiosity->subdivide_elements( 7 );
 }
 
 window :: ~window()

@@ -6,8 +6,6 @@
 
 #include <vector>
 
-using namespace x3d;
-
 //
 // unsent_flux = sum of exitance bands * area
 

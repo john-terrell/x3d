@@ -2,5 +2,3 @@
 
 #include <cassert>
 #include <cmath>
-
-namespace x3d {}
