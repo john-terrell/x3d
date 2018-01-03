@@ -90,5 +90,5 @@ public:
     
     void calculate();
     
-    void subdivide( std::vector< element > &elements, std::vector< vertex > &vertices );
+    unsigned subdivide( std::vector< element > &elements, std::vector< vertex > &vertices );
 };

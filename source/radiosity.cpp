@@ -549,11 +549,16 @@ void radiosity :: subdivide_elements( unsigned count )
         {
             element &e = _elements[ index ];
         
-            e.subdivide( _elements, _vertices );
-            _exitances.push_back( _exitances[ index ] );
-            _element_owners.push_back( _element_owners[ index ] );
-            _form_factors.push_back( 0.0 );
-            _emittance.push_back( _emittance[ index ] );
+            auto newElementCount = e.subdivide( _elements, _vertices );
+            while (newElementCount > 0)
+            {
+                _exitances.push_back( _exitances[ index ] );
+                _element_owners.push_back( _element_owners[ index ] );
+                _form_factors.push_back( 0.0 );
+                _emittance.push_back( _emittance[ index ] );
+
+                --newElementCount;
+            }
         }
     }
 }
@@ -567,9 +572,14 @@ void radiosity :: subdivide_patches( unsigned count )
         {
             element &e = _patches[ index ];
         
-            e.subdivide( _patches, _vertices );
-            _emittance.push_back( _emittance[ index ] );
-            _patch_exitances.push_back( _patch_exitances[ index ] );
+            auto newElementCount = e.subdivide( _patches, _vertices );
+            while (newElementCount)
+            {
+                _emittance.push_back( _emittance[ index ] );
+                _patch_exitances.push_back( _patch_exitances[ index ] );
+
+                --newElementCount;
+            }
         }
     }
 }
