@@ -115,9 +115,15 @@ window :: window( int x, int y, unsigned width, unsigned height ) :
     data->_radiosity = new radiosity( glut_id, 512 );
     
     data->_radiosity->cornell_box();
-    data->_radiosity->subdivide_patches( 5 );
+    printf("Subdividing patches...");
+    data->_radiosity->subdivide_patches( 3 );
+    printf("complete. (%ld patches)\n", data->_radiosity->patch_count());;
     data->_radiosity->create_elements();
-    data->_radiosity->subdivide_elements( 1 );
+    printf("Subdividing elements...");
+    data->_radiosity->subdivide_elements( 3 );
+    printf("complete. (%ld elements)\n", data->_radiosity->element_count());;
+
+    printf("Subdivision complete (%ld vertices), %ld patches, %ld elements)\n", data->_radiosity->vertex_count(), data->_radiosity->patch_count(), data->_radiosity->element_count());
 }
 
 window :: ~window()

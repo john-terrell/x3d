@@ -30,6 +30,21 @@ public:
     std::vector< element > _elements;
     std::vector< vertex > _vertices;
     
+    size_t vertex_count() const
+    {
+        return _vertices.size();
+    }
+
+    size_t patch_count() const
+    {
+        return _patches.size();
+    }
+
+    size_t element_count() const
+    {
+        return _elements.size();
+    }
+
 public:
     radiosity( int glut_parent_window, unsigned resolution );
     

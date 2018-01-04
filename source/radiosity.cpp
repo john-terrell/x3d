@@ -207,8 +207,6 @@ void radiosity :: execute_iteration()
     
     _patch_exitances[ _index_of_patch_with_highest_unsent_flux ] = color( 0, 0, 0 );
 
-//    _index_of_patch_with_highest_unsent_flux = determine_patch_with_highest_unsent_flux(_total_unsent_flux);
-
     glutSetWindow( current_glut_id );
 }
 
@@ -391,7 +389,6 @@ void radiosity :: draw_full()
             glVertex3f( e.vertex_number( 3 )._x, e.vertex_number( 3 )._y, e.vertex_number( 3 )._z );
             glEnd();
         }
-        
     }
 }
 
