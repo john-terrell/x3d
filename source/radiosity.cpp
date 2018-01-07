@@ -22,7 +22,7 @@ radiosity :: radiosity( int parent_window, unsigned resolution ) :
     glutShowWindow();
     
     _vertices.reserve( 1000000 );
-    _patches.reserve( 100000 );
+    _patches.reserve( 1000000 );
     
     _elements.reserve( 1000000 );
     _form_factors.reserve( _elements.capacity() );
