@@ -11,12 +11,13 @@
 
 class radiosity
 {
-    std::vector< color > _emittance;
-    std::vector< float > _form_factors;
-    std::vector< color > _exitances;
+    std::vector< color > _emittance;            // per element
+    std::vector< float > _form_factors;         // per element
+    std::vector< color > _exitances;            // per element
     std::vector< color > _patch_exitances;
     std::vector< unsigned > _element_owners;
-    
+    std::vector< unsigned > _pixelBuffer;
+
     float _total_flux, _total_unsent_flux;
     unsigned _index_of_patch_with_highest_unsent_flux;
     

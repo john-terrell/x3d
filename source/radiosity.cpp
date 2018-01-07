@@ -26,6 +26,8 @@ radiosity :: radiosity( int parent_window, unsigned resolution ) :
     
     _elements.reserve( 1000000 );
     _form_factors.reserve( _elements.capacity() );
+
+    _pixelBuffer.resize( _resolution );
 }
 
 float radiosity :: convergence() const
@@ -79,30 +81,32 @@ void radiosity :: calculate_form_factors( unsigned patch_index )
     //
     render( patch_index, frame[ 0 ], frame[ 2 ] );
     
-    std::vector< unsigned > pixelBuffer;
-    pixelBuffer.resize( _resolution );
-    
-    glFinish();
-    
     glReadBuffer( GL_BACK );
 
+    //
+    // Loop through each pixel rendered on the top face and determine the element
+    // that pixel represents.  Then, increase the form factor for that element by the
+    // delta form factor for the pixel on the hemicube it was seen through.
+    //
     for( unsigned row = 0; row < _resolution; ++row )
     {    
 #ifdef _WIN32
-		glReadPixels( 0, row, _resolution, 1, GL_RGBA, GL_BYTE, &pixelBuffer[ 0 ] );
+		glReadPixels( 0, row, _resolution, 1, GL_RGBA, GL_BYTE, &_pixelBuffer[ 0 ] );
 #else
-        glReadPixels( 0, row, _resolution, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, &pixelBuffer[ 0 ] );
+        glReadPixels( 0, row, _resolution, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, &_pixelBuffer[ 0 ] );
 #endif
 
-        unsigned *pixel = &pixelBuffer[ 0 ];
+        unsigned *pixel = &_pixelBuffer[ 0 ];
         for( unsigned col = 0; col < _resolution; ++col )
         {
             unsigned index = *pixel >> 8; // lop off the alpha channel
             assert( index == 0xFFFFFF || index <= _form_factors.size() );
             
             if( index != 0xFFFFFF )
+            {
                 _form_factors[ index ] += _hemicube.delta_form_factor_top( row, col );
-        
+            }
+
             ++pixel;
         }
     }
@@ -138,27 +142,26 @@ void radiosity :: calculate_form_factors( unsigned patch_index )
         {    
             unsigned read_row = ( _resolution >> 1 ) + row;
 #ifdef _WIN32
-			glReadPixels( 0, read_row, _resolution, 1, GL_RGBA, GL_BYTE, &pixelBuffer[ 0 ] );
+			glReadPixels( 0, read_row, _resolution, 1, GL_RGBA, GL_BYTE, &_pixelBuffer[ 0 ] );
 #else
-			glReadPixels( 0, read_row, _resolution, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, &pixelBuffer[ 0 ] );
+			glReadPixels( 0, read_row, _resolution, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, &_pixelBuffer[ 0 ] );
 #endif                        
-            unsigned *pixel = &pixelBuffer[ 0 ];
+            unsigned *pixel = &_pixelBuffer[ 0 ];
             for( unsigned col = 0; col < _resolution; ++col )
             {
                 unsigned index = *pixel >> 8; // lop off the alpha channel
                 assert( index == 0xFFFFFF || index <= _form_factors.size() );
                 
-                unsigned row2 = row; // ( _resolution >> 1 ) - 1 - row;
-                
                 if( index != 0xFFFFFF )
-                    _form_factors[ index ] += _hemicube.delta_form_factor_side( row2, col );
-            
+                {
+                    _form_factors[ index ] += _hemicube.delta_form_factor_side( row, col );
+                }
+
                 ++pixel;
             }
         }
     
         glutSwapBuffers();
-
     }
 }
 
@@ -184,17 +187,20 @@ void radiosity :: execute_iteration()
     // walk the element list and if that element's form factor entry in 
     // the table is greater than zero, set its exitance
     //
+    color shooting_exitance = _patch_exitances[ _index_of_patch_with_highest_unsent_flux ];
+
     for( unsigned index = 0; index < _elements.size(); ++index )
     {
         if( _form_factors[ index ] == 0.0 )
+        {
             continue;
-            
+        }
+
         float rff = _form_factors[ index ] * _patches[ _index_of_patch_with_highest_unsent_flux ].area() / _elements[ index ].area();
         rff = ( rff > 1.0 ? 1.0 : rff );
         
         if( rff > 0.0 )
         {
-            color shooting_exitance = _patch_exitances[ _index_of_patch_with_highest_unsent_flux ];
             color delta = _elements[ index ].reflectance() * rff * shooting_exitance;
         
             _exitances[ index ] += delta * ( 1.0 - absorption );
@@ -270,6 +276,7 @@ void radiosity :: render( unsigned patch_index, const vector3 &view, const vecto
     }
     
     glEnd();
+    glFinish();
 }
 
 void radiosity :: draw_elements()
@@ -405,7 +412,13 @@ void radiosity :: cornell_box()
     _vertices.push_back( vertex( 0, 213.0, 547.7, 332.0 ) );
     _vertices.push_back( vertex( 0, 213.0, 547.7, 227.0 ) );
     _patches.push_back( element( color( 1, 1, 1 ), &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ] ) );
-   
+
+    _vertices.push_back( vertex( 99, 1.0, 275.0, 227.0 ) ); 
+    _vertices.push_back( vertex( 99, 1.0, 275.0, 332.0 ) );
+    _vertices.push_back( vertex( 99, 1.0, 175.0, 332.0 ) );
+    _vertices.push_back( vertex( 99, 1.0, 175.0, 227.0 ) );
+    _patches.push_back( element( color( .9, .8, .9 ), &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ] ) );
+
     // floor
     _vertices.push_back( vertex( 1, 552.8, 0.0, 0.0 ) );
     _vertices.push_back( vertex( 1, 0.0, 0.0, 0.0 ) );
@@ -446,7 +459,7 @@ void radiosity :: cornell_box()
     _vertices.push_back( vertex( 6,  82.0, 165.0, 225.0 ) ); 
     _vertices.push_back( vertex( 6, 240.0, 165.0, 272.0 ) ); 
     _vertices.push_back( vertex( 6, 290.0, 165.0, 114.0 ) ); 
-    _patches.push_back( element( color( 1, 1, 1 ), &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ] ) );
+    _patches.push_back( element( color( 1, 1, 0 ), &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ], &_vertices[ vert_index++ ] ) );
 
     _vertices.push_back( vertex( 7, 290.0,   0.0, 114.0 ) ); 
     _vertices.push_back( vertex( 7, 290.0, 165.0, 114.0 ) ); 
@@ -510,10 +523,14 @@ void radiosity :: cornell_box()
     _emittance[ 0 ]._red = 32.0f;
     _emittance[ 0 ]._green = 32.0f;
     _emittance[ 0 ]._blue = 32.0f;
-
     _patch_exitances[ 0 ] = _emittance[ 0 ];
-       
-    for( unsigned index = 1; index < _patch_exitances.size(); ++index )
+    
+    _emittance[ 1 ]._red = 9.0f;
+    _emittance[ 1 ]._green = 8.0f;
+    _emittance[ 1 ]._blue = 9.0f;
+    _patch_exitances[ 1 ] = _emittance[ 1 ];
+   
+     for( unsigned index = 2; index < _patch_exitances.size(); ++index )
     {
         _emittance[ index ] = color( 0, 0, 0 );
         _patch_exitances[ index ] = color( 0, 0, 0 );
